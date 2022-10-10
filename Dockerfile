@@ -1,6 +1,6 @@
 FROM node:lts-alpine
 
-LABEL maintainer="Hoppscotch (support@hoppscotch.io)"
+LABEL maintainer="ridha-bouazizi (contact.ridha.bouazizi@gmail.com)"
 
 # Add git as the prebuild target requires it to parse version information
 RUN apk add --no-cache --virtual .gyp \

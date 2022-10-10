@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hoppscotch
+  labels:
+    name: hoppscotch
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hoppscotch
+  template:
+    metadata:
+      labels:
+        app: hoppscotch
+    spec:
+      containers:
+      - name: hoppscotch
+        image: harbor.huxium.io/library/hoppscotch:latest
+        ports:
+          - name: hoppscotch
+            containerPort: 3000
+        resources:
+          limits:
+            cpu: 300m
+            memory: 300Mi
+          requests:
+            cpu: 50m
+            memory: 50Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: hoppscotch
+  name: hoppscotch
+  namespace: default
+spec:
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+  - port: 3000
+    protocol: TCP
+    targetPort: 3000
+  selector:
+    app: hoppscotch
+  sessionAffinity: None
+  type: ClusterIP
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: hoppscotch.huxium.io
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - kind: Rule
+    match: Host(`hoppscotch.huxium.io`)
+    services:
+    - name: hoppscotch
+      port: 3000
+  tls:
+    secretName: tls-secret
